@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Choose what to measure
+{% endblock title %}
+
+
+{% block content %}
+
+<form action="/measure_specific" method="post">
+
+    <h2>Choose what to measure</h2>
+
+    <label for="technique">Measurement technique:</label>
+    <select id="technique" name="technique">
+        <option value="perfnow">Performance.now()</option>
+        <option value="datenow">Date.now()</option>
+        <option value="newdate">new Date().getTime()</option>
+        <option value="perfnownav">navigationStart + perf.now()</option>
+        <option value="perfnoworig">timeOrigin + perf.now()</option>
+        <option value="interplperf">Interpolation perf.now()</option>
+        <option value="interpldate">Interpolation Date.now()</option>
+        <option value="perfobs">performanceObserver</option>
+        <option value="animF">requestAnimationFrame</option>
+        <option value="postM1">postMessage with ports</option>
+        <option value="postM2">postMessage without ports</option>
+        <option value="setI_1">setInterval with performace now</option>
+        <option value="setI_2">setInterval without performance now</option>
+        <option value="wbwk_sab">SharedArrayBuffer</option>
+        <option value="wbwk_Post1">Message passing between main and Web Worker</option>
+        <option value="wbwk_Post2">Message passing between two Web Workers</option>
+    </select>
+
+    <label for="escalation">Choose the escalation level:</label>
+    <select id="escalation" name="escalation" onchange="updateSecondaryOptions()">
+        <option value="level1">Plain Javascript on website</option>
+        <option value="level2">Same origin iframe</option>
+        <option value="level3">Cross origin iframe</option>
+        <option value="level4">Cross origin iframe with header variations</option>
+    </select>
+
+    <div id="headerOptions"></div>
+
+    <label for="cycles">How many cycles would you like to run:</label>
+    <input type="number" id="cycles" name="cycles" min="1"><br>
+
+    <button type="submit"> Measure! </button>
+</form>
+
+
+<script>
+    function updateSecondaryOptions() {
+        var escLevel = document.getElementById("escalation").value;
+        var secondaryOptionSelect = document.getElementById("headerOptions");
+
+        secondaryOptionSelect.innerHTML = "";
+
+        if (escLevel === "level4") {
+            secondaryOptionSelect.innerHTML += `
+                <label id="embedder">
+                    <span style="margin-right: 20px;">Cross-origin-Embedder-Policy</span>
+                    <select id="Embedder-header" name="headerval">
+                        <option value="embedderPolicy-nothing"></option>
+                        <option value="embedderPolicy-unsafe-none">unsafe-none</option>
+                        <option value="embedderPolicy-require-corp">require-corp</option>
+                        <option value="embedderPolicy-credentialless">credentialless</option>
+                    </select>
+                </label>
+
+                <label id="opener">
+                    <span style="margin-right: 20px;">Cross-origin-Opener-Policy</span>
+                    <select id="Opener-header" name="headerval">
+                        <option value="openerPolicy-nothing"></option>
+                        <option value="openerPolicy-same-origin">same-origin</option>
+                        <option value="openerPolicy-unsafe-none">unsafe-none</option>
+                        <option value="openerPolicy-same-origin-allow-popups">same-origin-allow-popups</option>
+                        <option value="openerPolicy-restrict-properties">restrict-properties</option>
+                    </select>
+                </label>
+
+                <label id="resource">
+                    <span style="margin-right: 20px;">Cross-origin-Resource-Policy</span>
+                    <select id="Resource-header" name="headerval">
+                        <option value="resourcePolicy-nothing"></option>
+                        <option value="resourcePolicy-same-site">same-site</option>
+                        <option value="resourcePolicy-same-origin">same-origin</option>
+                        <option value="resourcePolicy-cross-origin">cross-origin</option>
+                    </select>
+                </label>
+            `;
+        }
+    }
+</script>
+
+{% endblock content %}

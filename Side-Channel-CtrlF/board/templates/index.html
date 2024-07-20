@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Timing Measurements
+{% endblock title %}
+
+
+{% block content %}
+<main>
+    <h1>Welcome to Side Channel CtrlF</h1>
+
+    <p1>
+        This website serves as a tool that tries different timing measurement techniques on the
+        browser that you are currently on. You can either run all the timing measurement techniques
+        on all escalation levels or choose to disable a specific technique or level
+        <a href="/measureAll" title="measure all">here</a>. Or you can design a specific scenario
+        that you would like to measure <a href="/measureOne" title="measure one">here</a>.
+    </p1><br><br>
+
+    <p1>
+        For explanations about the usage of the website, the inspiration for it and descriptions of the
+        measurement techniques please visit the <a href="/about" title="about">about page</a>.
+    </p1>
+
+</main>
+{% endblock content %}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div style="font-size: 8vw; font-weight: bold; text-align: center;">Please wait for the measurements to finish (you can see progress in the console)</div>
+
+<script src="static/measurements.js"></script>
+
+<script>
+    (async () => {
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+
+        let excluded_levels = {{ joint_excluded_levels | tojson }}
+        let excluded_techniques = {{ joint_excluded_techniques | tojson }}
+        let headers = {{ headers | tojson }}
+        let cycles = {{ cycles }}
+
+        let url_params = ''
+        url_params += excluded_techniques.map((v) => `techniques=${v}`).join("&")
+        url_params += (url_params === '' ? '' : '&') + `cycles=${cycles}`
+
+        let result = {}
+
+        let current_stage = ''
+
+        if (!excluded_levels.includes('level1')) {
+            result['Direct measure'] = await measure_all(excluded_techniques, cycles)
+        }
+
+        function finished_measure_frame(data_from_listener) {
+            result[current_stage] = data_from_listener
+        }
+
+        let listener = (event) => {
+            if (event.data != null) {
+                finished_measure_frame(event.data);
+            }
+        }
+        window.addEventListener("message", listener, false)
+
+
+        if (!excluded_levels.includes('level2')) {
+            let framy = document.createElement('iframe')
+            framy.setAttribute("src", "/frame_measure?" + url_params)
+
+            current_stage = 'Same Origin iframe'
+
+            document.body.appendChild(framy)
+
+            while(!(current_stage in result)) {
+                await timeout(200)
+            }
+
+            document.body.removeChild(framy)
+        }
+
+        if (!excluded_levels.includes('level3')) {
+            let framy = document.createElement('iframe')
+
+            framy.setAttribute("src", "http://localhost:5001/frame_measure?" + url_params)
+
+            current_stage = 'Cross Origin iframe'
+
+            document.body.appendChild(framy)
+
+
+            while(!(current_stage in result)) {
+                await timeout(200)
+            }
+
+            document.body.removeChild(framy)
+        }
+
+        if (!excluded_levels.includes('level4')) {
+            console.log("level4")
+            let framy = document.createElement('iframe')
+            framy.setAttribute("allow", "cross-origin-isolated")
+
+            new_params = url_params + (url_params === '' ? '' : '&') + headers.map((v) => `headers=${v}`).join("&")
+            framy.setAttribute("src", "http://localhost:5001/frame_measure?" + new_params)
+            current_stage = "Cross origin iframe with custom header setting"
+
+            document.body.appendChild(framy)
+
+            i = 0;
+            while (!(current_stage in result) && i <= 50) {
+                await timeout(200)
+                i++;
+            }
+            document.body.removeChild(framy);
+            window.close();
+        }
+
+        result_string = JSON.stringify(result)
+        console.log(result)
+        localStorage.setItem('results', result_string);
+        window.close()
+    })()
+</script>
+
+</body>
+</html>

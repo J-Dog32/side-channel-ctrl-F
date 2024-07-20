@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Choose what to measure
+{% endblock title %}
+
+
+{% block content %}
+
+<main>
+    <h1>Welcome to Side Channel CtrlF About Page</h1>
+
+    <h2>Inspiration</h2>
+
+    <p>
+        With the rise of side channel attacks in various different settings we see a lot of these attacks being
+        deployed in browsers. As an example, consider the following papers:
+    </p>
+
+    <p>
+        Marc Andrysco et al. “On Subnormal Floating Point and Abnormal Timing”. In: 2015 IEEE Symposium on Security
+        and Privacy, SP 2015, San Jose, CA, USA, May 17-21, 2015. IEEE Computer Society, 2015, pp. 623–639. doi:
+        10.1109/ SP.2015.44. url: <a href="https://doi.org/10.1109/SP.2015.44" title="On Subnormal Floating Point and Abnormal Timing">
+        https://doi.org/10.1109/SP.2015.44</a>
+    </p>
+
+    <p>
+        Daniel Gruss, Clémentine Maurice, and Stefan Mangard. “Rowhammer.js: A Remote Software-Induced Fault Attack
+        in JavaScript”. In: Detection of Intrusions and Malware, and Vulnerability Assessment - 13th International
+        Conference, DIMVA 2016, San Sebastián, Spain, July 7-8, 2016, Proceedings. Ed. by Juan Caballero, Urko Zurutuza, and Ricardo
+        J. Rodríguez. Vol. 9721. Lecture Notes in Computer Science. Springer, 2016, pp. 300–321. doi: 10.1007/978-3-319-40667-1\_15.
+        url: <a href="https://doi.org/10.1007/978-3-319-40667-1%5C_15" title="Rowhammer.js: A Remote Software-Induced Fault Attack
+        in JavaScript">https://doi.org/10.1007/978-3-319-40667-1%5C_15</a>
+    </p>
+
+    <p>
+        Yossef Oren et al. “The Spy in the Sandbox: Practical Cache Attacks in JavaScript and their Implications”. In:
+        Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security, Denver, CO, USA,
+        October 12-16, 2015. Ed. by Indrajit Ray, Ninghui Li, and Christopher Kruegel. ACM, 2015, pp. 1406–1418. doi:
+        10.1145/2810103.2813708. url: <a href="https://doi.org/10.1145/2810103.2813708" title="The Spy in the Sandbox: Practical Cache Attacks in JavaScript and their Implications">
+        https://doi.org/10.1145/2810103.2813708</a>
+    </p>
+
+    <p>
+        Michael Schwarz et al. “NetSpectre: Read Arbitrary Memory over Network”. In: Computer Security - ESORICS 2019
+        - 24th European Symposium on Research in Computer Security, Luxembourg, September 23-27, 2019, Proceedings, Part
+        I. Ed. by Kazue Sako, Steve A. Schneider, and Peter Y. A. Ryan. Vol. 11735. Lecture Notes in Computer Science.
+        Springer, 2019, pp. 279–299. doi: 10.1007/978-3-030-29959-0\_14.
+        url: <a href="https://doi.org/10.1007/978-3-030-29959-0%5C_14" title="NetSpectre: Read Arbitrary Memory over Network">
+        https://doi.org/10.1007/978-3-030-29959-0%5C_14</a>
+    </p>
+
+    <p>
+        Yingchen Wang et al. “DVFS Frequently Leaks Secrets: Hertzbleed Attacks Beyond SIKE, Cryptography, and CPU-
+        Only Data”. In: 44th IEEE Symposium on Security and Privacy, SP 2023, San Francisco, CA, USA, May 21-25, 2023.
+        IEEE, 2023, pp. 2306–2320. doi: 10.1109/SP46215.2023.10179326.
+        url: <a href="https://doi.org/10.1109/SP46215.2023.10179326" title="DVFS Frequently Leaks Secrets: Hertzbleed Attacks Beyond SIKE, Cryptography, and CPU-
+        Only Data">https://doi.org/10.1109/SP46215.2023.10179326</a>
+    </p>
+
+    <p>
+        Reading all these papers, you quickly realize that the attacks presented often focus on only one browser and are not
+        easily reproducible. This is because it is hard to know which techniques will work in different ways in different
+        browsers. Hence, researchers focus on getting the attack to work on one browser but not on multiple, as it might be
+        a big overhead to try and understand how the implementations of the functions vary from browser to browser.
+        This tool provides the testing of the efficiency of various timing measurement techniques in different environments like
+        same-origin iframes, cross-origin iframes, and different header settings. The hope is that this tool will make
+        it easier for researchers to see which technique has the best granularity on a specific browser to make the attacks
+        work. Additionally, this tool could be helpful for browser developers to see which techniques provide which
+        granularity on their browser.
+    </p><br><br>
+
+    <h2>Usage</h2>
+
+    <p>
+        There are two different usecases that the tool provides: You can either test all the measurement techniques and
+        exclude some or you can focus on one specific setting (technique and context).
+    </p>
+
+    <h3>Measure All</h3>
+
+    <p>
+        The <a href="/measureAll" title="measure all">measure all</a> page provides the possibility to test all implemented
+        techniques on the a browser of your choice in all four escalation levels. To do this please start the tool and visit
+        the browser that you are interested in on localhost with port 5000. Navigate to the measure all page and click measure.
+        The tool will now spawn a new page to do the first three levels (without header settings) and then for level 4 there
+        will be a new window for every header combination. This is because for the shared array buffer measurement to work
+        the embedded site as well as the embedder site need to have the same headers set. After finishing their current
+        measurement every new spawned site should close itself. This however can run into problems as not every header
+        combination is a valid one and hence there is a timer running that closes the window after some time without a response.
+        This will then produce a error message that says that this header combination is not valid. Should this occur with
+        a header specification that seems to be valid it might be that the measurement took too long and the timer closed the
+        window too early. In this case please adjust the timeout to be longer in the measure and helper html files. The
+        measure all page also allows to exclude specific techniques and escalation levels that should be disregarded in the
+        next run. Additionally it provides a way to specify the number of measurement cycles that should be run (by default 100).
+    </p>
+
+    <h3>Measure One</h3>
+
+    <p>
+        The <a href="/measureOne" title="measure one">measure one</a> page provides the possibility to test one specific
+        technique in a unique setting. Please select the technique you are interested in and the environment and click
+        the measure button. Again, the measurement cycles can be adjusted and are set to 100 by default.
+    </p>
+
+    <h2>Techniques</h2>
+
+    <p>
+        For all techniques the code for the measurement function is stored in a string and composed dynamically by using the
+        eval function. Some techniques are very fast and hence the measurement might output 0 or infinity dependent on the
+        case. These are run several times until they produce a value that makes sense.
+    </p>
+
+    <h3>Explicit timers</h3>
+
+    <p>
+        As all timers in the explicit timers category work the same way I will only talk about them as a group.
+        To this cathegory belong: Performance.now(), Date.now(), new Date().getTime(), performance.timing.navigationStart
+        + performance.now() and performance.timeOrigin + performance.now(). For each of them there are two measurements
+        taken subsequent to each other to then calculate the delta. This is done number of cycle times with all of the
+        deltas being stored in a list. Then we find the minimum of the list that is not 0 and this is our granulartity.
+    </p>
+
+    <h3>Interpolattion techniques</h3>
+
+    <p>
+        For the interpolation techniques we have need a big clock that has some granularity which in our case is performance.now()
+        or Date.now() and then we need a small clock. The first thing we have to find out is how many measurements of the
+        small clock fit in one of the big clock. To do this we are going to call the big clock until we see the value change.
+        Such a change is called a clock edge and now we know that the big clock has "resset" and we can start to calibrate the
+        small clock. Again we call the big clock until the next clock edge but this time we increase a counter every time
+        the clock edge is not yet hit. This will give us exactly how many increments we are able to do in between two clock
+        edges. After this calibration we run the code that we actually want to test and after execution wait for the next clock
+        edge with incrementing our counter. Now we can substract this number from the average value from the small clock
+        measurements to get the amount of increments while the tested code was still running. Dividing this by the average
+        of the small clocks times the grain we get the actual amount that we need to add to the big clock measurements. This
+        is repeated cycles times and the non-negative minimum of these runs is picked as the grain.
+    </p>
+
+    <h3>performanceObserver technique</h3>
+
+    <p>
+        With the performance observer we first create the observer object that will now listen for marks that we set. Then
+        we set the start and the end mark and hand them to the measure function which will then invoke our observer. The
+        observer will now simply return the value and we push the duration to the list of measurements. This is repeated
+        cycles times.
+    </p>
+
+    <h3>requestAnimationFrame</h3>
+
+    <p>
+        For the requestAnimationFrame technique we use the functionality of the call back function in such a way that we
+        create an infinite loop by calling the requestAnimationFrame from within the callback function. The timestamp that
+        is given to the function is constantly incremented and depends on the rendering speed of the website. Hence we always
+        substract the current timestamp from the previous one and then replace the previous one with the current one.
+    </p>
+
+    <h3>setInterval techniques</h3>
+
+    <p>
+        The idea of both setInterval techniques is the same: we first start an infinite loop using the setInterval function
+        that simply increments a counter and then we use setTimeout to interrupt after 10 milliseconds and calculate the delta.
+        The difference between the two methods is in how the delta is calculated. In the method using performance.now we
+        do not trust that the setTimeout function will always return exactly after 10 milliseconds and hence measure the
+        time to the timeout ourselves and divide it by the count to get the measurement. In the version without performance.now
+        we simply divide 10 by the count.
+    </p>
+
+    <h3>postMessage techniques</h3>
+
+    <p>
+        For both postMessage variations we start a postMessage loop that increments a counter variable. Then we access this
+        counter first normally and the second time after sending a XMLHTTPRequest to interrupt the javascript execution.
+        Without this request we are not able to see a change in the counter variable. The difference between the techniques
+        is that the one with ports creates a channel and sends the requests to that channel to create the loop the other one
+        only operated on the window.
+    </p>
+
+    <h3>Message passing techniques</h3>
+
+    <p>
+        The Message passing techniques use a web worker to increment a counter and access it to see timing differences.
+        This can either be done by letting just communicating with the web worker that has the counter or having two
+        web workers interact to create a counter that can then be accessed by the main thread.
+    </p>
+
+    <h3>SharedArrayBuffer</h3>
+
+    <p>
+        This technique simply creates a SharedArraybuffer and transfers it to the web worker which is now going to continuously
+        increment the first index of the array. To get the timing we need to access this first index. With this technique
+        however there are two challenges: first the website needs to be cross origin isolated and second if we access the values
+        consecutively we do not see a change because this access is too fast. The second challenge can be solved by using
+        promises and the first one requires us to set the Embedder-Policy to either require-corp or credentialless and the
+        Opener-Policy to same-origin.
+    </p>
+
+    <h2>Related Work</h2>
+
+    <p>
+        For the related work section there have been 3 papers that were extremely helpful in both understanding the field
+        and developing the tool. The first two go in depth about the functionality of different timing measurement techniques
+        and explain how and why they work. First they talk about the explicit timers like Date.now() or performance.now()
+        to then explore some mathematical ways to increase the accuracy even if the granularity is artificially increased
+        by the browser. Lastly there are a lot of really creative ideas that have to do with web workers, message passing
+        and various callback mechanisms.
+    </p>
+
+    <p>
+        David Kohlbrenner and Hovav Shacham. “Trusted Browsers for Uncertain Times”. In: 25th USENIX Security Sym-
+        posium, USENIX Security 16, Austin, TX, USA, August 10-12, 2016. Ed. by Thorsten Holz and Stefan Savage. USENIX
+        Association, 2016, pp. 463–480. url: <a href="https://www.usenix.org/conference/usenixsecurity16/technical-
+        sessions/presentation/kohlbrenner" title="Trusted Browsers for Uncertain Times">https://www.usenix.org/conference/usenixsecurity16/technical-
+        sessions/presentation/kohlbrenner</a>
+    </p>
+
+    <p>
+        Michael Schwarz et al. “Fantastic Timers and Where to Find Them: High-Resolution Microarchitectural Attacks
+        in JavaScript”. In: Financial Cryptography and Data Security - 21st International Conference, FC 2017, Sliema, Malta,
+        April 3-7, 2017, Revised Selected Papers. Ed. by Aggelos Kiayias. Vol. 10322. Lecture Notes in Computer Science.
+        Springer, 2017, pp. 247–267. doi: 10.1007/978-3-319-70972-7\_13. url:  <a href="https://doi.org/10.1007/978-3-
+        319-70972-7%5C_13" title="Fantastic Timers and Where to Find Them: High-Resolution Microarchitectural Attacks
+        in JavaScript">https://doi.org/10.1007/978-3-319-70972-7%5C_13</a>
+    </p>
+
+    <p>
+        The last paper that was really helpful explained a lot about the Same-Origin Policy in Modern Browsers and gave
+        a lot of insight on how to look at the Cross-Origin testing that the tool provides.
+    </p>
+
+    <p>
+        Jörg Schwenk, Marcus Niemietz, and Christian Mainka. “Same-Origin Policy: Evaluation in Modern Browsers”.
+        In: 26th USENIX Security Symposium, USENIX Security 2017, Vancouver, BC, Canada, August 16-18, 2017. Ed. by
+        Engin Kirda and Thomas Ristenpart. USENIX Association, 2017, pp. 713–727. url: <a href="https://www.usenix.org/
+        conference/usenixsecurity17/technical-sessions/presentation/schwenk" title="Same-Origin Policy: Evaluation in
+        Modern Browsers">https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/schwenk</a>
+    </p>
+
+</main>
+
+
+{% endblock content %}

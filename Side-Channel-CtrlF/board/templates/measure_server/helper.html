@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    (async () => {
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        const embedder = ["embedderPolicy-nothing", "embedderPolicy-unsafe-none", "embedderPolicy-require-corp", "embedderPolicy-credentialless"];
+        const openerh = ["openerPolicy-nothing", "openerPolicy-same-origin", "openerPolicy-unsafe-none", "openerPolicy-same-origin-allow-popups", "openerPolicy-restrict-properties"]
+        const resource = ["resourcePolicy-nothing", "resourcePolicy-same-site", "resourcePolicy-same-origin", "resourcePolicy-cross-origin"]
+
+        let excluded_levels = {{ joint_excluded_levels | tojson }}
+        let excluded_techniques = {{ joint_excluded_techniques | tojson }}
+        let given_headers = {{ headers | tojson }}
+        let level4 = {{ level4_all }}
+        let cycles = {{ cycles }}
+
+        let result = {}
+
+        let url_params = ''
+        url_params += excluded_techniques.map((v) => `techniques=${v}`).join("&")
+        url_params += (url_params === '' ? '' : '&') + excluded_levels.map((v) => `levels=${v}`).join("&")
+        url_params += (url_params === '' ? '' : '&') + given_headers.map((v) => `headers=${v}`).join("&")
+        url_params += (url_params === '' ? '' : '&') + `cycles=${cycles}`
+
+        localStorage.clear();
+        const newWindow = window.open("/measure_helper?" + url_params, '_blank');
+
+        let result_string = null;
+        while(!result_string) {
+            result_string = localStorage.getItem('results');
+            await timeout(200);
+        }
+        result = JSON.parse(result_string);
+        console.log(result);
+
+        if (!level4) {
+            console.log("executed")
+            for (const emb in embedder) {
+                for (const ope in openerh) {
+                    for (const res in resource) {
+                        let current_headers = []
+                        if (emb == 0 && ope == 0 && res == 0) {
+                            continue
+                        }
+                        current_headers.push(embedder[emb]);
+                        current_headers.push(openerh[ope]);
+                        current_headers.push(resource[res]);
+                        let new_params = ''
+                        new_params += excluded_techniques.map((v) => `techniques=${v}`).join("&")
+                        new_params += (new_params === '' ? '' : '&') + `levels=level1&levels=level2&levels=level3`
+                        new_params += (new_params === '' ? '' : '&') + `cycles=${cycles}`
+                        new_params += (new_params === '' ? '' : '&') + current_headers.map((v) => `headers=${v}`).join("&")
+
+
+                        localStorage.clear();
+                        const headerWindow = window.open(`/measure_helper?${new_params}`, '_blank');
+
+                        result_string_new = null;
+                        i = 0;
+                        while(!result_string_new && i <= 20) {
+                            result_string_new = localStorage.getItem('results');
+                            await timeout(200);
+                            i++;
+                        }
+
+                        if (result_string_new) {
+                            result_temp = JSON.parse(result_string_new);
+
+                            for (env in result_temp) {
+                                result['XO ' + embedder[emb] + ' ' + openerh[ope] + ' ' + resource[res]] = result_temp[env]
+                            }
+                            console.log(result)
+                        } else {
+                            result['XO ' + embedder[emb] + ' ' + openerh[ope] + ' ' + resource[res]] = {"Any" : "This header specification failed"}
+                            console.log(result);
+                        }
+                    }
+                }
+            }
+        }
+        console.log(result)
+        localStorage.setItem('results', JSON.stringify(result));
+        window.location = `results`
+    })()
+</script>
+
+</body>
+</html>

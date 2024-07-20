@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Choose what to measure
+{% endblock title %}
+
+
+{% block content %}
+
+<script>
+    let result_string = localStorage.getItem('results');
+    if (result_string) {
+        results = JSON.parse(result_string);
+    }
+</script>
+
+<table id="granularityTable">
+    <thead>
+        <tr>
+            <th>Context</th>
+            <th>Technique</th>
+            <th>Granularity</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
+
+<script>
+    let tableBody = document.querySelector('#granularityTable tbody');
+    for (const level in results) {
+        const measurement = results[level];
+
+        for (const technique in measurement) {
+            let row = document.createElement('tr');
+            let lev = document.createElement('td');
+            lev.textContent = level;
+            row.appendChild(lev);
+
+            let tec = document.createElement('td');
+            tec.textContent = technique;
+            row.appendChild(tec);
+            let gran = document.createElement('td');
+            gran.textContent = measurement[technique];
+            row.appendChild(gran);
+
+            tableBody.appendChild(row);
+        }
+
+        // Create a separator row
+        let separatorRow = document.createElement('tr');
+        let separatorCell = document.createElement('td');
+        separatorCell.colSpan = 3;
+        separatorCell.style.height = '10px';
+        separatorCell.style.backgroundColor = '#f0f0f0';
+        separatorRow.appendChild(separatorCell);
+
+        tableBody.appendChild(separatorRow);
+    }
+</script>
+
+<script>
+    const grantable = document.getElementById('granularityTable');
+    function convert_to_csv() {
+        const rows = grantable.querySelectorAll('tr');
+        let csv = '';
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('th,td');
+            const rowData = Array.from(cells).map(cell => cell.textContent.trim());
+            csv += rowData.join(',') + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'granularities.csv';
+        link.click();
+
+        URL.revokeObjectURL(link.href);
+    }
+</script>
+
+<button id="csvbutton" onclick="convert_to_csv()">Convert to CSV</button>
+
+{% endblock content %}

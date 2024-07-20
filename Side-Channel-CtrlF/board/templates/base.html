@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <a href="/" class="home-link">
+            <div class="back-icon"></div>
+        </a>
+        <div class="project-name">Side Channel CtrlF</div>
+        <nav class="navigation">
+            <ul>
+                <li><a href="/measureAll">MeasureAll</a></li>
+                <li><a href="/measureOne">MeasureOne</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div id="Spacertop"></div>
+
+{% block content %}{% endblock content %}
+
+<div id="Spacerbottom"></div>
+
+<footer class="footer">
+    This project was written by Jonas Schmitt with advising from David Kohlbrenner
+</footer>
+
+</body>
+</html>

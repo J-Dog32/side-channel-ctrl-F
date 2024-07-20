@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Measure everything exclusion options
+{% endblock title %}
+
+
+{% block content %}
+<h2>Timing Measurement Options</h2>
+
+<form action="/measure" method="post">
+    <label>Please choose which measurement techniques you would like to exclude:</label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="perfnow">
+        <span>Performance.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="datenow">
+        <span>Date.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="newdate">
+        <span>new Date().getTime()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="perfnownav">
+        <span>performance.timing.navigationStart + performance.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="perfnoworig">
+        <span>performance.timeOrigin + performance.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="interplperf">
+        <span>Interpolation performance.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="interpldate">
+        <span>Interpolation Date.now()</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="perfobs">
+        <span>Performance Observer</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="animF">
+        <span>requestAnimationFrame</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="setI_1">
+        <span>setInterval with performace now</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="setI_2">
+        <span>setInterval without performance now</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="postM1">
+        <span>postMessage with ports</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="postM2">
+        <span>postMessage without ports</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="wbwk_sab">
+        <span>SharedArrayBuffer</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="wbwk_Post1">
+        <span>Message passing between main and Web Worker</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="techniques" value="wbwk_Post2">
+        <span>Message passing between two Web Workers</span>
+    </label><br>
+
+    <label>Please choose which escalation level you would like to exclude:</label><br>
+
+    <label>
+        <input type="checkbox" name="levels" value="level1">
+        <span>Plain Javascript on website</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="levels" value="level2">
+        <span>Same origin iframe</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="levels" value="level3">
+        <span>Cross origin iframe</span>
+    </label><br>
+
+    <label>
+        <input type="checkbox" name="level4" value="true">
+        <span>Cross origin iframe with headers (this means all included header combinations)</span>
+    </label><br>
+
+    <label for="cycles">How many cycles would you like to run:</label>
+    <input type="number" id="cycles" name="cycles" min="1"><br>
+
+    <button type="submit"> Measure! </button>
+</form>
+
+{% endblock content %}

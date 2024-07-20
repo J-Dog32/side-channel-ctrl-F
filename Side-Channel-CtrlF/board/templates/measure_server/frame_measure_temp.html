@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script src="static/measurements.js"></script>
+
+<script>
+    let excluded_techniques = {{ joint_excluded_techniques | tojson }}
+    let cycles = {{ cycles }}
+
+    async function do_measurements() {
+        result = await measure_all(excluded_techniques, cycles);
+        window.parent.postMessage(result, '*');
+    }
+
+    do_measurements();
+</script>
+
+</body>
+</html>
